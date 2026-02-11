@@ -48,6 +48,13 @@ th, td {
   padding: 6px;
   text-align: center;
 }
+
+/* ❌ prošlé tipy */
+.expired {
+  color: #c62828;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
 </style>
 
 <!-- 🔥 Firebase COMPAT SDK -->
@@ -88,7 +95,7 @@ Ať se zelená ✅📈💚💖🍀
 </table>
 
 <script>
-/* 🔥 Firebase konfigurace – fortuna-d5ee6 */
+/* 🔥 Firebase konfigurace */
 const firebaseConfig = {
   apiKey: "AIzaSyDkwTM9ehny171FTDVeHGjwU6Sq0LERF3A",
   authDomain: "fortuna-d5ee6.firebaseapp.com",
@@ -131,14 +138,25 @@ function saveTip() {
   dateInput.value = "";
 }
 
-/* 📡 Načítání tipů živě */
+/* 📡 Načítání tipů + kontrola po 00:01 */
 db.ref("tips").on("value", snapshot => {
   tipsTable.innerHTML = "";
   const data = snapshot.val() || {};
 
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const afterMidnight = now.getHours() > 0 || (now.getHours() === 0 && now.getMinutes() >= 1);
+
   Object.keys(data).forEach(key => {
     const t = data[key];
     const tr = document.createElement("tr");
+
+    const tipDate = new Date(t.date);
+    tipDate.setHours(0, 0, 0, 0);
+
+    if (afterMidnight && tipDate < today) {
+      tr.classList.add("expired");
+    }
 
     tr.innerHTML = `
       <td>${t.owner}</td>
