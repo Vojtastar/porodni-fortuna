@@ -147,27 +147,36 @@ db.ref("tips").on("value", snapshot => {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const afterMidnight = now.getHours() > 0 || (now.getHours() === 0 && now.getMinutes() >= 1);
 
-  Object.keys(data).forEach(key => {
-    const t = data[key];
-    const tr = document.createElement("tr");
+ Object.keys(data).forEach(key => {
+  const t = data[key];
+  const tr = document.createElement("tr");
 
-    const tipDate = new Date(t.date);
-    tipDate.setHours(0, 0, 0, 0);
+  const tipDate = new Date(t.date);
+  tipDate.setHours(0, 0, 0, 0);
 
-    if (afterMidnight && tipDate < today) {
-      tr.classList.add("expired");
-    }
+  /* ✅ DEFINICE VÍTĚZNÉHO TIPU */
+  const isWinner =
+    t.owner.toLowerCase() === "pavlína svobodová" &&
+    t.babyName.toLowerCase() === "antonín" &&
+    t.date === "2026-02-17";
 
-    tr.innerHTML = `
-      <td>${t.owner}</td>
-      <td>${t.babyName}</td>
-      <td>${t.date}</td>
-    `;
+  if (isWinner) {
+    tr.classList.add("winner");
+  } else {
+    tr.classList.add("expired");
+  }
 
-    tipsTable.appendChild(tr);
-  });
+  tr.innerHTML = `
+    <td>${t.owner}</td>
+    <td>${t.babyName}</td>
+    <td>${t.date}</td>
+  `;
+
+  tipsTable.appendChild(tr);
+});
 });
 </script>
 
 </body>
 </html>
+
